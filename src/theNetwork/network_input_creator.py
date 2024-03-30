@@ -133,3 +133,24 @@ def combine_and_label(solar_value, weather_df, egauge_df):
     
     return result_df
 
+def process_files(weather_file_path, egauge_file_path, solar_value_threshold, output_file_path):
+    # Prepare the weather data
+    weather_df = prepare_weather_file(weather_file_path)
+    
+    # Prepare the egauge data
+    egauge_df = prepare_egauge_file(egauge_file_path)
+    
+    # Combine the weather and egauge data and label it
+    labeled_df = combine_and_label(solar_value_threshold, weather_df, egauge_df)
+    
+    # Output the labeled dataframe to a CSV file
+    labeled_df.to_csv(output_file_path, index=False)
+
+# Example usage:
+weather_file_path = 'src/theNetwork/data/washburn_wi_weather25 - washburn_wi_weather25.csv'  # Replace with the path to your weather file
+egauge_file_path = 'src/theNetwork/data/egauge_bf_all.csv'    # Replace with the path to your egauge file
+solar_value_threshold = 100  # Set your solar value threshold for labeling
+output_file_path = 'src/the_sun_giggler/output.csv'    # Replace with your desired output file path
+
+# Process the files and output the final CSV
+process_files(weather_file_path, egauge_file_path, solar_value_threshold, output_file_path)

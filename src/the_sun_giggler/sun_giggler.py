@@ -38,18 +38,21 @@ class WeatherDataset(Dataset):
 class SolarNet(nn.Module):
     def __init__(self):
         super(SolarNet, self).__init__()
-        self.layer1 = nn.Linear(52, 128)  # Adjusted input layer to size 53
-        self.layer2 = nn.Linear(128, 64)  # Hidden layer
-        self.layer3 = nn.Linear(64, 32)   # Hidden layer
-        self.output_layer = nn.Linear(32, 1)  # Output layer for binary classification
-
+        self.layer1 = nn.Linear(52, 128)
+        self.dropout1 = nn.Dropout(0.5)  # Example dropout layer
+        self.layer2 = nn.Linear(128, 64)
+        self.dropout2 = nn.Dropout(0.5)  # Another dropout layer
+        self.layer3 = nn.Linear(64, 32)
+        self.output_layer = nn.Linear(32, 1)
         self.relu = nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.layer1(x))
+        x = self.dropout1(x)  # Applying dropout
         x = self.relu(self.layer2(x))
+        x = self.dropout2(x)  # Applying another dropout
         x = self.relu(self.layer3(x))
-        x = self.output_layer(x)  # Remove sigmoid here for BCEWithLogitsLoss
+        x = self.output_layer(x)
         return x
 
 
@@ -83,7 +86,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # Train the model
-    train(model, criterion, optimizer, train_loader, epochs=50)
+    train(model, criterion, optimizer, train_loader, epochs=1000)
 
     model_save_path = 'src/the_sun_giggler/model_weights.pth'
     torch.save(model.state_dict(), model_save_path)
