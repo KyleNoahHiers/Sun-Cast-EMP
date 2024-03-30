@@ -1,45 +1,40 @@
-from src.the_sun_giggler.sun_giggler import SolarNet, WeatherDataset
+from sun_giggler import WeatherDataset, SolarNet
 import torch
-
-# Assuming the first data point for demonstration; replace with actual data as needed
-csv_file_path = 'output.csv'  # Update this path to your dataset
-dataset = WeatherDataset(csv_file_path, label_present=True)  # Assuming labels are present
-test_data_point, _ = dataset[0]  # Getting the first data point (and ignoring its label)
-
-# Ensure the data point is in the correct shape (adding batch dimension) and type
-test_data_point = test_data_point.unsqueeze(0)  # Add a batch dimension
+from torch.utils.data import DataLoader
 
 # Load the model
 model = SolarNet()
 
-# Load the weights
+# Load the weights and switch to evaluation mode
 model_load_path = 'model_weights.pth'
 model.load_state_dict(torch.load(model_load_path))
-
-# Switch to evaluation mode
 model.eval()
 
-# Move the model and data point to the correct device
+# Assuming 'output.csv' is your test dataset
+csv_file_path = 'src/the_sun_giggler/output.csv'
+test_dataset = WeatherDataset(csv_file_path, label_present=True)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-test_data_point = test_data_point.to(device)
 
-# Make a prediction
-with torch.no_grad():  # Ensure gradients are not computed for inference
-    prediction = model(test_data_point)
+# Initialize variables to track predictions and actual labels
+all_predictions = []
+all_labels = []
 
-# Assuming a binary classification problem and you're interested in the probability
-probability = torch.sigmoid(prediction).item()  # Applying sigmoid to get the probability
+# Make predictions
+with torch.no_grad():
+    for inputs, labels in test_loader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+        outputs = model(inputs)
+        probabilities = torch.sigmoid(outputs).squeeze()  # Assuming binary classification
+        predicted_classes = (probabilities > 0.5).long()  # Classify as 0 or 1 based on threshold
+        all_predictions.extend(predicted_classes.cpu().numpy())
+        all_labels.extend(labels.cpu().numpy())
 
-print(f"Predicted probability: {probability}")
+# Evaluate predictions
+from sklearn.metrics import accuracy_score
 
-# Continuation from the previous example where the model makes a prediction
-
-# Threshold to determine class
-threshold = 0.5
-
-# Apply threshold to probability to determine class
-predicted_class = "good day" if probability > threshold else "bad day"
-
-print(f"Predicted class: {predicted_class}")
-
+accuracy = accuracy_score(all_labels, all_predictions)
+print(f"Accuracy on the test dataset: {accuracy}")
