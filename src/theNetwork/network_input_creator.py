@@ -19,9 +19,24 @@ phrase_encode = {
     'heavy intensity rain':11,
     'light rain':12}
 
+def merge_egauge_files(file1, file2):
+    # Load the eGauge data files
+    egauge1 = pd.read_csv(file1)
+    egauge2 = pd.read_csv(file2)
+
+    # Concatenate the DataFrames. Assuming 'ignore_index=True' to reset index.
+    merged_df = pd.concat([egauge2, egauge1], ignore_index=True)
+
+    # Remove duplicates based on 'Date & Time' column. Keeping the first occurrence.
+    merged_df = merged_df.drop_duplicates(subset=['Date & Time'], keep='first')
+
+    # Optionally, sort by 'Date & Time' if the data isn't in chronological order
+    merged_df = merged_df.sort_values(by='Date & Time').reset_index(drop=True)
+
+    return merged_df.to_csv('merged_egauge.csv', index=False)
 
 # take in a weather file and output a dataframe with the desired formatting in each row.
-def prepare_weather_file(weather_file, no_date_or_description = False):
+def prepare_weather_file(weather_file, no_date_or_description = False, columns_to_keep = None):
     # Read in the weather file
     weather = pd.read_csv(weather_file)
 
@@ -59,30 +74,20 @@ def prepare_weather_file(weather_file, no_date_or_description = False):
 
     #normalize all columns that contain "uvi" to have a max of 100
     for col in weather.columns:
-        if "uvi" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
+        if weather[col].dtype in ['int64', 'float64']:
+            max_value = round(weather[col].max())
+            min_value = round(weather[col].min())
+            # Check if already normalized
+            if not (min_value == 0 and max_value == 100):
+                if max_value != 0:  # Prevent division by zero
+                    weather[col] = ((weather[col] / weather[col].max()) * 100).round()
 
-    #Normalize all columns that contain "temp" to have a max of 100
-    for col in weather.columns:
-        if "temp" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
-
-    #Normalize all columns that contain "POP" to have a max of 100
-    for col in weather.columns:
-        if "POP" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
+    if columns_to_keep is not None:
+        columns_to_retain = [col for col in weather.columns if any(keep in col for keep in columns_to_keep) or "Hourly Forecast UTC" in col]
     for col in weather.columns:
         if(no_date_or_description):
             if "Hourly Forecast UTC" in col or "Description Hourly" in col:
                 weather.drop(col, axis=1, inplace=True)
-
-
-
-    
-
 
 
     return weather
@@ -96,14 +101,14 @@ def prepare_egauge_file(egauge_file):
     egauge['Hour'] = egauge['Date & Time'].dt.hour
     
     # Filter rows for 6 AM and 6 PM
-    df_am = egauge[egauge['Hour'] == 6][['Date', 'Generation [kWh]']].set_index('Date')
-    df_pm = egauge[egauge['Hour'] == 18][['Date', 'Generation [kWh]']].set_index('Date')
+    df_am = egauge[egauge['Hour'] == 6][['Date', "Solar Production+ [kWh]"]].set_index('Date')
+    df_pm = egauge[egauge['Hour'] == 18][['Date', "Solar Production+ [kWh]"]].set_index('Date')
     
     # Calculate the difference in 'Generation [kWh]' between 6 PM and 6 AM for each day
-    production_diff = df_pm['Generation [kWh]'] - df_am['Generation [kWh]']
+    production_diff = df_pm["Solar Production+ [kWh]"] - df_am["Solar Production+ [kWh]"]
     production_diff = production_diff.reset_index()
     production_diff.columns = ['Date', 'Production Difference']  # Renaming the difference column
-    
+    production_diff = production_diff[production_diff['Production Difference'] >1]
     return production_diff
 
 
@@ -130,6 +135,10 @@ def combine_and_label(solar_value, weather_df, egauge_df):
 
      # Remove 'Date' column and any columns containing the word 'Description'
     result_df.drop(columns=['Hourly Forecast UTC'] + [col for col in result_df if 'Description' in col] + ['Date'], inplace=True)
-    
+    # remove all rows with null values
+    result_df = result_df.dropna()
     return result_df
 
+df = combine_and_label(140, prepare_weather_file('../theNetwork/data/washburn_wi_weather25 - washburn_wi_weather25.csv'), prepare_egauge_file('../theNetwork/data/data.csv')).to_csv('../the_sun_giggler/output.csv', index=False)
+#count the number of true and false labels in the last column of the dataframe
+#

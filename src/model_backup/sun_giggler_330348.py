@@ -47,11 +47,9 @@ class SolarNet(nn.Module):
 
     def forward(self, x):
         x = self.relu(self.layer1(x))
-        x = self.dropout1(x)  # Applying dropout
         x = self.relu(self.layer2(x))
-        x = self.dropout2(x)  # Applying another dropout
         x = self.relu(self.layer3(x))
-        x = self.output_layer(x)
+        x = self.output_layer(x)  # Remove sigmoid here for BCEWithLogitsLoss
         return x
 
 

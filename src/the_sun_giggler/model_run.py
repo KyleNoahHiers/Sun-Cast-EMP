@@ -7,12 +7,12 @@ from sklearn.metrics import accuracy_score
 model = SolarNet()
 
 # Load the weights and switch to evaluation mode
-model_load_path = 'src/the_sun_giggler/model_weights.pth'
+model_load_path = 'model_weights.pth'
 model.load_state_dict(torch.load(model_load_path))
 model.eval()
 
 # Assuming 'output.csv' is your test dataset
-csv_file_path = 'src/the_sun_giggler/egauge_bf_3_29_2024.csv'
+csv_file_path = 'output.csv'
 test_dataset = WeatherDataset(csv_file_path, label_present=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
