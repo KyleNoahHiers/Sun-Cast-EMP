@@ -1,6 +1,7 @@
 from sun_giggler import WeatherDataset, SolarNet
 import torch
 from torch.utils.data import DataLoader
+from sklearn.metrics import accuracy_score
 
 # Load the model
 model = SolarNet()
@@ -11,7 +12,7 @@ model.load_state_dict(torch.load(model_load_path))
 model.eval()
 
 # Assuming 'output.csv' is your test dataset
-csv_file_path = 'src/the_sun_giggler/output.csv'
+csv_file_path = 'output.csv'
 test_dataset = WeatherDataset(csv_file_path, label_present=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
@@ -34,7 +35,7 @@ with torch.no_grad():
         all_labels.extend(labels.cpu().numpy())
 
 # Evaluate predictions
-from sklearn.metrics import accuracy_score
+
 
 accuracy = accuracy_score(all_labels, all_predictions)
 print(f"Accuracy on the test dataset: {accuracy}")

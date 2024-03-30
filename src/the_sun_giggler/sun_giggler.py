@@ -67,23 +67,26 @@ def train(model, criterion, optimizer, train_loader, epochs=10):
             running_loss += loss.item()
         print(f"Epoch {epoch+1}, Loss: {running_loss/len(train_loader)}")
 
+def main():
+    # Assuming your CSV file's path
+    csv_file_path = 'output.csv'
 
-# Assuming your CSV file's path
-csv_file_path = 'output.csv'
+    # Initialize Dataset and DataLoader
+    dataset = WeatherDataset(csv_file_path, label_present=True)  # Adjust `label_present` based on your CSV
+    train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-# Initialize Dataset and DataLoader
-dataset = WeatherDataset(csv_file_path, label_present=True)  # Adjust `label_present` based on your CSV
-train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    # Initialize the model
+    model = SolarNet()
 
-# Initialize the model
-model = SolarNet()
+    # Loss function and optimizer
+    criterion = nn.BCEWithLogitsLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Loss function and optimizer
-criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # Train the model
+    train(model, criterion, optimizer, train_loader, epochs=10)
 
-# Train the model
-train(model, criterion, optimizer, train_loader, epochs=10)
+    model_save_path = 'model_weights.pth'
+    torch.save(model.state_dict(), model_save_path)
 
-model_save_path = 'model_weights.pth'
-torch.save(model.state_dict(), model_save_path)
+if __name__ == "__main__":
+    main();
