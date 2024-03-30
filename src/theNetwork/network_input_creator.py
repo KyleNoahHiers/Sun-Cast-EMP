@@ -21,7 +21,7 @@ phrase_encode = {
 
 
 # take in a weather file and output a dataframe with the desired formatting in each row.
-def prepare_weather_file(weather_file, no_date_or_description = False):
+def prepare_weather_file(weather_file, no_date_or_description = False, columns_to_keep=None):
     # Read in the weather file
     weather = pd.read_csv(weather_file)
 
@@ -81,9 +81,9 @@ def prepare_weather_file(weather_file, no_date_or_description = False):
 
 
 
-    
-
-
+    if columns_to_keep is not None:
+        columns_to_retain = [col for col in weather.columns if any(keep in col for keep in columns_to_keep) or "Hourly Forecast UTC" in col]
+        weather = weather[columns_to_retain]
 
     return weather
 
