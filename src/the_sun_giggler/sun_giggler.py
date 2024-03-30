@@ -86,7 +86,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # Train the model
-    train(model, criterion, optimizer, train_loader, epochs=1000)
+    train(model, criterion, optimizer, train_loader, epochs=15)
 
     model_save_path = 'src/the_sun_giggler/model_weights.pth'
     torch.save(model.state_dict(), model_save_path)

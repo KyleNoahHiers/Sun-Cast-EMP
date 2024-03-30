@@ -57,29 +57,15 @@ def prepare_weather_file(weather_file, no_date_or_description = False, columns_t
         if "Pressure" in col or "Wind" in col or "Humidity" in col:
             weather.drop(col, axis=1, inplace=True)
 
-    #normalize all columns that contain "uvi" to have a max of 100
+    # normalize all integer and float columns
     for col in weather.columns:
-        if "uvi" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
-
-    #Normalize all columns that contain "temp" to have a max of 100
-    for col in weather.columns:
-        if "temp" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
-
-    #Normalize all columns that contain "POP" to have a max of 100
-    for col in weather.columns:
-        if "POP" in col:
-            weather[col] = weather[col].apply(lambda x: x/10)
-            weather[col] = weather[col].apply(lambda x: 100 if x > 100 else x)
-    for col in weather.columns:
-        if(no_date_or_description):
-            if "Hourly Forecast UTC" in col or "Description Hourly" in col:
-                weather.drop(col, axis=1, inplace=True)
-
-
+        if weather[col].dtype in ['int64', 'float64']:
+            max_value = round(weather[col].max())
+            min_value = round(weather[col].min())
+            # Check if already normalized
+            if not (min_value == 0 and max_value == 100):
+                if max_value != 0:  # Prevent division by zero
+                    weather[col] = ((weather[col] / weather[col].max()) * 100).round()
 
     if columns_to_keep is not None:
         columns_to_retain = [col for col in weather.columns if any(keep in col for keep in columns_to_keep) or "Hourly Forecast UTC" in col]
