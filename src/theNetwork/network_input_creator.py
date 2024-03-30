@@ -133,23 +133,3 @@ def combine_and_label(solar_value, weather_df, egauge_df):
     
     return result_df
 
-
-
-
-input_weather_file = 'src/theNetwork/data/washburn_wi_weather25 - washburn_wi_weather25.csv'
-input_egauge_file = 'src/theNetwork/data/egauge_bf_all.csv'
-
-# Prepare the weather data and save it to a file
-weather_df = prepare_weather_file(input_weather_file)
-#weather_df.to_csv('theNetwork/weatherfile.csv', index=False)
-
-# Prepare the egauge data and save it to a file
-egauge_df = prepare_egauge_file(input_egauge_file)
-#egauge_df.to_csv('theNetwork/egaugefile.csv', index=False)
-
-# Use the prepared DataFrames to combine and label, then save the result
-result_df = combine_and_label(100, weather_df, egauge_df)
-result_df.to_csv('src/the_sun_giggler/output.csv', index=False)
-
-
-

@@ -69,7 +69,7 @@ def train(model, criterion, optimizer, train_loader, epochs=10):
 
 def main():
     # Assuming your CSV file's path
-    csv_file_path = 'output.csv'
+    csv_file_path = 'src/the_sun_giggler/output.csv'
 
     # Initialize Dataset and DataLoader
     dataset = WeatherDataset(csv_file_path, label_present=True)  # Adjust `label_present` based on your CSV
@@ -83,9 +83,9 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # Train the model
-    train(model, criterion, optimizer, train_loader, epochs=10)
+    train(model, criterion, optimizer, train_loader, epochs=50)
 
-    model_save_path = 'model_weights.pth'
+    model_save_path = 'src/the_sun_giggler/model_weights.pth'
     torch.save(model.state_dict(), model_save_path)
 
 if __name__ == "__main__":
