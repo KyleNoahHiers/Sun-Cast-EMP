@@ -47,16 +47,14 @@ class SolarNet(nn.Module):
 
     def forward(self, x):
         x = self.relu(self.layer1(x))
-        x = self.dropout1(x)  # Applying dropout
         x = self.relu(self.layer2(x))
-        x = self.dropout2(x)  # Applying another dropout
         x = self.relu(self.layer3(x))
-        x = self.output_layer(x)
+        x = self.output_layer(x)  # Remove sigmoid here for BCEWithLogitsLoss
         return x
 
 
 
-def train(model, criterion, optimizer, train_loader, epochs=50):
+def train(model, criterion, optimizer, train_loader, epochs=10):
     model.train()
     for epoch in range(epochs):
         running_loss = 0.0
@@ -71,7 +69,7 @@ def train(model, criterion, optimizer, train_loader, epochs=50):
 
 def main():
     # Assuming your CSV file's path
-    csv_file_path = 'output.csv'
+    csv_file_path = '../../solar_classification/output.csv'
 
     # Initialize Dataset and DataLoader
     dataset = WeatherDataset(csv_file_path, label_present=True)  # Adjust `label_present` based on your CSV
@@ -85,7 +83,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # Train the model
-    train(model, criterion, optimizer, train_loader, epochs=10)
+    train(model, criterion, optimizer, train_loader, epochs=5)
 
     model_save_path = 'model_weights.pth'
     torch.save(model.state_dict(), model_save_path)
