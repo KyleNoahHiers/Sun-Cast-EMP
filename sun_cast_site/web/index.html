@@ -1,28 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+  <!-- Base tag for Flutter web apps. Adjust the href value according to your app's deployment path. -->
+  <base href="/">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures your app is mobile-friendly -->
   <meta name="description" content="A new Flutter project.">
 
-  <!-- iOS meta tags & icons -->
+  <!-- iOS specific tags for web app capabilities -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="sun_cast_site">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
@@ -31,25 +20,45 @@
 
   <title>sun_cast_site</title>
   <link rel="manifest" href="manifest.json">
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCo2bbW3svicT0fFOfWQ_kKqms8MQs7Wdc&libraries=places"></script>
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = null;
+  <!-- Google Maps API -->
+  <!-- Make sure to replace the API key placeholder below with your actual Google Maps API key -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVLHbFybc6DewhaUx9eSqq2He4ZgIXRsk&libraries=places"></script>
+
+  <!-- Firebase Configuration -->
+  <!-- The configuration below is already set up. Just make sure it matches your Firebase project details -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js" defer></script>
+  <script type="module">
+    // Firebase SDK initialization
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+
+    const firebaseConfig = {
+    apiKey: 'AIzaSyBcCW768hOCZgQxPh4aWScw64vBdKdsQ5Q',
+    appId: '1:293777135361:web:ed083674c8debf4dc32d00',
+    messagingSenderId: '293777135361',
+    projectId: 'suncast-af831',
+    authDomain: 'suncast-af831.firebaseapp.com',
+    storageBucket: 'suncast-af831.appspot.com',
+    measurementId: 'G-5SCVXELF9S',
+    };
+
+    const app = initializeApp(firebaseConfig);
   </script>
-  <!-- This script adds the flutter initialization JS code -->
+
+  <!-- Flutter App Initialization -->
+  <script src="main.dart.js" type="application/javascript" defer></script>
   <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
+    window.addEventListener('load', () => {
+      // Initialize Flutter web engine
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerVersion: null, // Service worker version. Ensure this is correctly set for caching strategies.
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
+        onEntrypointLoaded: (engineInitializer) => {
+          engineInitializer.initializeEngine().then((appRunner) => {
             appRunner.runApp();
           });
         }
