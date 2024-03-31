@@ -52,8 +52,10 @@ def prep_load_file_for_training(load_file):
 def prep_load_file(load_file):
     # Make the usage column called load and make it be a subtraction of the column after it and itself
     #drop all rows that arent between 6am and 6pm
+    print(load_file.head())
     load_file = load_file[load_file['Hour'] >= 6]
     load_file = load_file[load_file['Hour'] <= 18]
+    print(load_file.head())
 
     # Implement cyclic encoding for Month, Day, Hour, and Day of the Week
     load_file['Month_sin'] = np.sin(2 * np.pi * load_file['Month'] / 12)
@@ -69,17 +71,19 @@ def prep_load_file(load_file):
 
     load_file['Day of the Week_sin'] = np.sin(2 * np.pi * load_file['Day of the Week'] / 7)
     load_file['Day of the Week_cos'] = np.cos(2 * np.pi * load_file['Day of the Week'] / 7)
-
+    print(load_file.head())
     # Delete the original 'Date & Time', 'Year', 'Month', 'Day', 'Hour', 'Day of the Week' columns
     load_file.drop([ 'Year', 'Month', 'Day', 'Hour', 'Day of the Week'], axis=1, inplace=True)
+    print(load_file.head())
 
 
-
-    # Drop the rows with null 'load'
-    load_file = load_file.dropna()
+    #replace all NaN values with 0
+    load_file = load_file.fillna(0)
 
     # Make 'load' an integer
     load_file['load'] = load_file['load'].astype(int)
+
+    return load_file
 
     # Save the modified DataFrame
     load_file.to_csv('load_file_encoded.csv', index=False)

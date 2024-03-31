@@ -20,6 +20,7 @@ class SunCast():
         self.egauge = nic.prepare_egauge_file(egauge_file)
         self.weather = nic.prepare_weather_file(weather_file)
         self.weather_predict = nic.prepare_weather_file(weather_predict)
+        print(pd.read_csv(load_predict).head())
         self.load_predict = plf.prep_load_file(pd.read_csv(load_predict))
         self.solar_value = self.egauge['Production Difference'].mean()
         self.input = nic.combine_and_label(self.solar_value, self.weather,self.egauge)
