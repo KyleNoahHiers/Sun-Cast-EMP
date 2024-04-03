@@ -12,7 +12,7 @@ model.load_state_dict(torch.load(model_load_path))
 model.eval()
 
 # Assuming 'output.csv' is your test dataset
-csv_file_path = 'output_test.csv'
+csv_file_path = 'output.csv'
 test_dataset = WeatherDataset(csv_file_path, label_present=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
@@ -37,7 +37,7 @@ with torch.no_grad():
 
 #read the csv file
 import pandas as pd
-df = pd.read_csv('output_test.csv')
+df = pd.read_csv('output.csv')
 #append all predictions to the dataframe as a column called 'predictions'
 df['predictions'] = all_predictions
 

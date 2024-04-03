@@ -75,7 +75,7 @@ class SunCast():
 
     def predict_solar(self):
         # Preprocess the DataFrame
-        input_df = self.weather_predict  # Assuming this is already a DataFrame
+        input_df = self.input  # Assuming this is already a DataFrame
         # Perform any necessary preprocessing on input_df as per your requirements
 
         # Wrap preprocessed DataFrame in WeatherDataset

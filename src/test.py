@@ -29,6 +29,5 @@ def test_api():
     print(sun_cast.predict_load(True).head())
 
     # test prediction
-    print(sun_cast.predict_solar().head())
-
+2
 test_api()

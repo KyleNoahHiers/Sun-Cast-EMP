@@ -3,19 +3,19 @@ import numpy as np
 import pandas as pd
 
 # Read the CSV file
-df = pd.read_csv('../85%/graphable.csv')
+df = pd.read_csv('../solar_classification/graphable.csv')
 
 #read br_egauge_nov
-df2 = pd.read_csv('../src/theNetwork/data/br_test/br_egauge_feb.csv')
+df2 = pd.read_csv('../../theNetwork/data/egauge_bf_all.csv')
 
 # turn its "Solar+ [kWh]" to be the difference between the current and next value
-df2['Solar+ [kWh]'] = -1*df2['Solar+ [kWh]'].diff()
+df2['Solar+ [kWh]'] = -1*df2['Generation [kWh]'].diff()
 #exclude all rows in df2 with Date & Time not between 6am and 6pm\
 df2["Date & Time"] = pd.to_datetime(df2["Date & Time"])
 df2 = df2[(df2['Date & Time'].dt.hour >= 6) *(df2['Date & Time'].dt.hour < 18)]
 #now group the rows by day and sum the "Solar+ [kWh]" for each day but do not sum the "Date & Time" column
 #make the "Date & Time" column the index
-df2_grouped = df2.groupby(df2["Date & Time"].dt.date)['Solar+ [kWh]'].sum()
+df2_grouped = df2.groupby(df2["Date & Time"].dt.date)['Generation [kWh]'].sum()
 #print num rows in df2_grouped
 print(len(df2_grouped))
 
