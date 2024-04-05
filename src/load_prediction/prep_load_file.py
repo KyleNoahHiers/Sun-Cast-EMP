@@ -1,12 +1,16 @@
 import pandas as pd
 import numpy as np
 
-def prep_load_file_for_training(load_file):
+def prep_load_file_for_training(load_file, label_present=True):
     # Make the usage column called load and make it be a subtraction of the column after it and itself
-    load_file['load'] = -1 * load_file["Usage [kWh]"].diff()
+    if label_present:
+        load_file['load'] = -1 * load_file["Usage [kWh]"].diff()
 
-    # Keep only 'Date & Time' and 'load' columns
-    load_file = load_file[['Date & Time', 'load']]
+        # Keep only 'Date & Time' and 'load' columns
+        load_file = load_file[['Date & Time', 'load']]
+    else:
+        load_file['load'] = 0
+        load_file = load_file[['Date & Time', 'load']]
 
     # Convert 'Date & Time' into datetime format and split into separate components
     load_file['Date & Time'] = pd.to_datetime(load_file['Date & Time'])
@@ -47,7 +51,7 @@ def prep_load_file_for_training(load_file):
     load_file['load'] = load_file['load'].astype(int)
 
     # Save the modified DataFrame
-    load_file.to_csv('load_file_encoded.csv', index=False)
+    return load_file
 
 def prep_load_file(load_file):
     # Make the usage column called load and make it be a subtraction of the column after it and itself
@@ -85,5 +89,10 @@ def prep_load_file(load_file):
 
     return load_file
 
-    # Save the modified DataFrame
-    load_file.to_csv('load_file_encoded.csv', index=False)
+# Save the modified DataFrame
+load_df = pd.DataFrame()
+#make load df it a file of date and time of the hours tomorrow between 6am and 6am
+load_df['Date & Time'] = pd.date_range(start='2024-04-5 06:00:00', end='2024-04-5 18:00:00', freq='H')
+load_df = prep_load_file_for_training(load_df,False)
+load_df.to_csv('load_file_44_encoded.csv', index=False)
+

@@ -25,7 +25,7 @@ class LoadModel(nn.Module):
 class Dataset():
 
     def __init__(self, data_frame, label_present=True):
-        self.data_frame = data_frame
+        self.data_frame = pd.read_csv(data_frame)
         self.label_present = label_present
 
     def __len__(self):
@@ -34,6 +34,7 @@ class Dataset():
     def __getitem__(self, idx):
         if self.label_present:
             #make data but exlude first column
+
             data = self.data_frame.iloc[idx, 1:].values.astype(float)
             #make label the first column
             label = self.data_frame.iloc[idx, 0]

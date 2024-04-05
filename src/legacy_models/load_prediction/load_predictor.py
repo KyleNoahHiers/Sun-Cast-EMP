@@ -67,7 +67,7 @@ def train_regression(model, criterion, optimizer, train_loader, epochs=10):
 
 def main():
     # Assuming your CSV file's path
-    csv_file_path = 'load_file_encoded.csv'
+    csv_file_path = '../../load_prediction/load_file_encoded.csv'
 
     # Initialize Dataset and DataLoader
     dataset = Dataset(csv_file_path)  # No label_present flag needed for regression

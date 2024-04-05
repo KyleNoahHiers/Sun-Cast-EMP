@@ -14,7 +14,7 @@ model.load_state_dict(torch.load(model_load_path))
 model.eval()
 
 # Assuming 'load_file_encoded.csv' is your test dataset
-csv_file_path = 'load_file_encoded.csv'
+csv_file_path = '../../load_prediction/load_file_encoded.csv'
 test_dataset = Dataset(csv_file_path, label_present=True)  # Assuming last column is the continuous label
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 

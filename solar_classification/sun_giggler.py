@@ -22,7 +22,6 @@ class WeatherDataset(Dataset):
         return len(self.data_frame)
 
     def __getitem__(self, idx):
-        print(self.data_frame.head())
         if self.label_present:
             # Assuming the last column is the label
             data = self.data_frame.iloc[idx, :-1].values.astype(float)

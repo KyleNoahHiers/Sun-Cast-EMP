@@ -6,7 +6,7 @@ def test_api():
     # Define paths to input files
     egauge_file = 'theNetwork/data/data.csv'
     weather_file = 'theNetwork/data/washburn_wi_weather25 - washburn_wi_weather25.csv'
-    weather_predict = 'theNetwork/data/br_test/bad_river_weather.csv'
+    weather_predict = 'theNetwork/data/washburn_wi_weather25 - washburn_wi_weather25.csv'
     load_predict = 'load_prediction/load_file.csv'
 
     # Initialize SunCast object
@@ -25,9 +25,9 @@ def test_api():
     # Ensure the solarModel and loadModel are correctly trained
     assert hasattr(sun_cast.solarModel, 'load_state_dict')
     assert hasattr(sun_cast.loadModel, 'load_state_dict')
-
+    print(sun_cast.predict_solar().head())
     print(sun_cast.predict_load(True).head())
 
     # test prediction
-2
+
 test_api()

@@ -8,14 +8,14 @@ import pandas as pd
 
 class WeatherDataset(Dataset):
     """Weather dataset."""
-    def __init__(self, csv_file, label_present=True):
+    def __init__(self, data_frame, label_present=True):
         """
         Args:
             csv_file (string): Path to the csv file with data.
             label_present (bool): Whether the last column contains labels.
         """
         # Load the dataset
-        self.data_frame = pd.read_csv(csv_file)
+        self.data_frame = data_frame
         self.label_present = label_present
 
     def __len__(self):
@@ -23,12 +23,15 @@ class WeatherDataset(Dataset):
 
     def __getitem__(self, idx):
         if self.label_present:
-            # Assuming the last column is the label
-            data = self.data_frame.iloc[idx, :-1].values.astype(float)
-            label = self.data_frame.iloc[idx, -1]
+            #assume data is the 3rd column onwards and the second column is the label
+            data = self.data_frame.iloc[idx, 3:].values.astype(float)
+
+            label = self.data_frame.iloc[idx, 2]
+
             return torch.tensor(data, dtype=torch.float), torch.tensor(label, dtype=torch.long)
         else:
-            data = self.data_frame.iloc[idx].values.astype(float)
+            #get rid of only the first column
+            data = self.data_frame.iloc[idx, 1:].values.astype(float)
             return torch.tensor(data, dtype=torch.float)
 
 # Usage
@@ -38,10 +41,10 @@ class WeatherDataset(Dataset):
 class SolarNet(nn.Module):
     def __init__(self):
         super(SolarNet, self).__init__()
-        self.layer1 = nn.Linear(52, 128)  # Adjusted input layer to size 53
-        self.layer2 = nn.Linear(128, 64)  # Hidden layer
-        self.layer3 = nn.Linear(64, 32)   # Hidden layer
-        self.output_layer = nn.Linear(32, 1)  # Output layer for binary classification
+        self.layer1 = nn.Linear(6, 64)  # Adjusted input layer to match feature size
+        self.layer2 = nn.Linear(64, 32)
+        self.layer3 = nn.Linear(32, 16)
+        self.output_layer = nn.Linear(16, 1)  # Single output for regression
 
         self.relu = nn.ReLU()
 
@@ -49,9 +52,8 @@ class SolarNet(nn.Module):
         x = self.relu(self.layer1(x))
         x = self.relu(self.layer2(x))
         x = self.relu(self.layer3(x))
-        x = self.output_layer(x)  # Remove sigmoid here for BCEWithLogitsLoss
+        x = self.output_layer(x)  # Direct output for regression
         return x
-
 
 
 def train(model, criterion, optimizer, train_loader, epochs=10):
@@ -69,8 +71,8 @@ def train(model, criterion, optimizer, train_loader, epochs=10):
 
 def main():
     # Assuming your CSV file's path
-    csv_file_path = '../../solar_classification/output.csv'
-
+    csv_file_path = '../theNetwork/data/labelled_weather.csv'
+    csv_file_path = pd.read_csv(csv_file_path)
     # Initialize Dataset and DataLoader
     dataset = WeatherDataset(csv_file_path, label_present=True)  # Adjust `label_present` based on your CSV
     train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
@@ -79,11 +81,12 @@ def main():
     model = SolarNet()
 
     # Loss function and optimizer
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+
     # Train the model
-    train(model, criterion, optimizer, train_loader, epochs=5)
+    train(model, criterion, optimizer, train_loader, epochs=10)
 
     model_save_path = 'model_weights.pth'
     torch.save(model.state_dict(), model_save_path)
