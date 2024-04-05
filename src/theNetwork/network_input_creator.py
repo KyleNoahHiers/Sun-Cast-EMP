@@ -35,7 +35,22 @@ def prep_weather_file(weather_file):
 
     weather = weather.iloc[1:]
     print(weather.columns)
+    #remove all null values in Hourly Forecast UT
+    # Iterate through each row and try to convert 'Hourly Forecast UTC' to datetime
+    for index, row in weather.iterrows():
+            try:
+                # Attempt to convert 'Hourly Forecast UTC' to datetime
+                weather.at[index, 'Hourly Forecast UTC'] = pd.to_datetime(row['Hourly Forecast UTC'])
+            except ValueError:
+                # If conversion fails, drop the row
+                weather.drop(index, inplace=True)
+
+
+    weather.dropna(subset=['Hourly Forecast UTC'], inplace=True)
+    # Convert 'Hourly Forecast UTC' to datetime
     weather['Hourly Forecast UTC'] = pd.to_datetime(weather['Hourly Forecast UTC'])
+
+
     weather['Hourly Forecast UTC'] = weather['Hourly Forecast UTC'] + pd.to_timedelta(weather.groupby('Hourly Forecast UTC').cumcount(), unit='h')
     #check if tz aware
     if weather['Hourly Forecast UTC'].dt.tz is None:
