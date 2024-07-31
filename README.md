@@ -1,10 +1,10 @@
-#  SunCast API Documentation
+#  SunCast Module Documentation
 
-The `SunCast` API is designed to facilitate solar production and load demand predictions based on weather and energy usage data. It utilizes trained machine learning models to make predictions and can automatically train these models if they have not been trained already.
+The `SunCast` Module is designed to facilitate solar production and load demand predictions based on weather and energy usage data. It utilizes trained machine learning models to make predictions and can automatically train these models if they have not been trained already.
 
 ## Initialization
 
-To start using the `SunCast` API, initialize the `SunCast` class with paths to your input data files:
+To start using the `SunCast` Module, initialize the `SunCast` class with paths to your input data files:
 
 ```python 
 sun_cast = SunCast(egauge_file, weather_file, weather_predict, load_predict)
@@ -55,9 +55,9 @@ label_present: Indicates whether the label (actual load) is present in the load_
 #### Returns: 
 A pandas DataFrame containing the original load prediction data along with a new column, Load Prediction, which contains the predicted load demand.
 
-## Testing API
+## Testing Module
 
-You can test the functionality of the API using the test_api function.
+You can test the functionality of the Module using the test_api function.
 
 ```python
 def test_api():
